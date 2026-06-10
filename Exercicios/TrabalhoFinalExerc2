@@ -1,0 +1,68 @@
+-- =======================================================================
+-- EXERCÍCIO 2
+-- =======================================================================
+
+-- QUESTÃO B:
+CREATE TABLE PESSOA (
+    CPF VARCHAR(11) NOT NULL,
+    Nome VARCHAR(50) NOT NULL,
+    Sexo CHAR(1) NOT NULL,
+    CONSTRAINT PK_PESSOA PRIMARY KEY (CPF)
+);
+
+CREATE TABLE ENDERECO (
+    id_endereco SERIAL, 
+    Cidade VARCHAR(50) NOT NULL,
+    Estado CHAR(2) NOT NULL,
+    CPF_pessoa VARCHAR(11) NOT NULL,
+    CONSTRAINT PK_ENDERECO PRIMARY KEY (id_endereco),
+    CONSTRAINT FK_ENDERECO_PESSOA FOREIGN KEY (CPF_pessoa) REFERENCES PESSOA(CPF)
+);
+
+CREATE TABLE CONTATO (
+    CPF_pessoa VARCHAR(11) NOT NULL,
+    Telefone VARCHAR(15) NOT NULL,
+    CONSTRAINT PK_CONTATO PRIMARY KEY (CPF_pessoa, Telefone),
+    CONSTRAINT FK_CONTATO_PESSOA FOREIGN KEY (CPF_pessoa) REFERENCES PESSOA(CPF)
+);
+
+-- QUESTÃO C: 
+INSERT INTO PESSOA (CPF, Nome, Sexo) VALUES 
+('111', 'Ana', 'F'),
+('222', 'Bruno', 'M'),
+('333', 'Carla', 'F'),
+('444', 'Diego', 'M');
+
+INSERT INTO ENDERECO (Cidade, Estado, CPF_pessoa) VALUES 
+('Rio de Janeiro', 'RJ', '111'),
+('São Paulo', 'SP', '222'),
+('Belo Horizonte', 'MG', '333'),
+('Vitória', 'ES', '444');
+
+INSERT INTO CONTATO (CPF_pessoa, Telefone) VALUES 
+('111', '999-444'),
+('111', '999-000'),
+('222', '888-888'),
+('222', '444-333'),
+('333', '555-777'),
+('444', '999-999');
+
+-- QUESTÃO D: 
+-- Consulta 1: INNER JOIN completo ordenado por Nome
+SELECT P.Nome, P.Sexo, E.Cidade, E.Estado, C.Telefone
+FROM PESSOA P
+INNER JOIN ENDERECO E ON P.CPF = E.CPF_pessoa
+INNER JOIN CONTATO C ON P.CPF = C.CPF_pessoa
+ORDER BY P.Nome ASC;
+
+-- Consulta 2: 
+SELECT P.Nome, P.Sexo, E.Estado
+FROM PESSOA P
+INNER JOIN ENDERECO E ON P.CPF = E.CPF_pessoa
+WHERE P.Sexo = 'F' OR E.Estado = 'SP'
+LIMIT 2;
+
+-- Consulta 3: Junção externa à esquerda (LEFT JOIN)
+SELECT P.Nome, C.Telefone
+FROM PESSOA P
+LEFT JOIN CONTATO C ON P.CPF = C.CPF_pessoa;
