@@ -1,0 +1,60 @@
+--- =======================================================
+--- EXERCÍCIO 1
+--- =======================================================
+
+--- [1] CRIAÇÃO DAS TABELAS (DDL)
+
+CREATE TABLE FARMACIA (
+    CNPJ_farmacia NUMERIC(14) NOT NULL,
+    nome_farmacia VARCHAR(30) NOT NULL,
+    tel_farmacia NUMERIC(13),
+    end_farmacia VARCHAR(50),
+    CONSTRAINT PK_FARMACIA PRIMARY KEY (CNPJ_farmacia)
+);
+
+CREATE TABLE PRODUTO (
+    cod_produto INTEGER NOT NULL,
+    valor_produto DECIMAL(10,2) NOT NULL,
+    qtd_produto INTEGER NOT NULL,
+    CNPJ_farmacia NUMERIC(14) NOT NULL,
+    CONSTRAINT PK_PRODUTO PRIMARY KEY (cod_produto),
+    CONSTRAINT FK_PRODUTO_FARMACIA FOREIGN KEY (CNPJ_farmacia) REFERENCES FARMACIA(CNPJ_farmacia)
+);
+
+CREATE TABLE FARMACEUTICO (
+    RG_farmaceutico NUMERIC(7) NOT NULL,
+    nome_farmaceutico VARCHAR(30) NOT NULL,
+    CNPJ_farmacia NUMERIC(14) NOT NULL,
+    CONSTRAINT PK_FARMACEUTICO PRIMARY KEY (RG_farmaceutico),
+    CONSTRAINT FK_FARMACEUTICO_FARMACIA FOREIGN KEY (CNPJ_farmacia) REFERENCES FARMACIA(CNPJ_farmacia)
+);
+
+--- [2] INSERÇÃO DOS DADOS (DML)
+
+INSERT INTO FARMACIA (CNPJ_farmacia, nome_farmacia, tel_farmacia, end_farmacia) VALUES 
+(12345678000101, 'REDEUNIFAN', 6232886000, 'Av. Bela Vista, Jardim das Esmeraldas'),
+(98765432000102, 'Farmácia Preço Baixo', 6235551234, 'Av. T-63, Setor Bueno'),
+(11122233000103, 'Drogaria Saúde Total', 6232229876, 'Rua 5, Setor Central');
+
+INSERT INTO PRODUTO (cod_produto, valor_produto, qtd_produto, CNPJ_farmacia) VALUES 
+(101, 25.50, 100, 12345678000101),
+(102, 12.99, 50, 12345678000101);
+
+INSERT INTO FARMACEUTICO (RG_farmaceutico, nome_farmaceutico, CNPJ_farmacia) VALUES 
+(4455667, 'Carlos Silva', 12345678000101),
+(7788990, 'Mariana Souza', 98765432000102);
+
+
+-- F: Todas as farmácias
+SELECT * FROM FARMACIA;
+
+-- G: Produtos na REDEUNIFAN
+SELECT P.* FROM PRODUTO P
+INNER JOIN FARMACIA F ON P.CNPJ_farmacia = F.CNPJ_farmacia
+WHERE F.nome_farmacia = 'REDEUNIFAN';
+
+-- H: Farmacêuticos na REDEUNIFAN
+SELECT FC.nome_farmaceutico, F.nome_farmacia
+FROM FARMACEUTICO FC
+INNER JOIN FARMACIA F ON FC.CNPJ_farmacia = F.CNPJ_farmacia
+WHERE F.nome_farmacia = 'REDEUNIFAN';
